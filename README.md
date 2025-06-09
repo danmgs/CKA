@@ -31,9 +31,6 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 => ***/var/lib/kubelet/config.yaml***  (mentionne le chemin "staticPodPath": ***/etc/kubernetes/manifests*** )
 
 
-
-
-
 ## Commandes système utiles
 
 - sudo netstat -natulp | grep postgres | grep LISTEN
@@ -182,7 +179,7 @@ spec:
   - Egress
 ```
 
-Allow all ingress
+Allow all egress
 ```
 spec:
   egress:
@@ -211,7 +208,19 @@ spec:
 ## DNS
 
 
-### Adresse d'un pod est : <P-O-D-I-P.default.pod>
+### Adresse d'un service
+
+```
+<service>.namespace.svc.local
+```
+
+### Adresse d'un pod est : 
+
+```
+<podip_avec_des_tirets>.namespace.pod.local
+```
+
+<P-O-D-I-P.default.pod>
 
 > kubectl get pod nginx-resolver -o wide
 > kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup <P-O-D-I-P.default.pod> > /root/CKA/nginx.pod
