@@ -298,10 +298,15 @@ kubectl auth can-i --as=system:serviceaccount:ci:ci-sa --namespace=production '*
 ## Configurations diverses
 
 ### /etc/sysct.conf
+- To ensure that IP forwarding changes are persistent:
 
-To ensure that IP forwarding changes are persistent:Create a configuration file: vi /etc/sysctl.d/k8s.confAdd the following line to the file: net.ipv4.ip_forward=1Apply the changes: sysctl -p
+Create a configuration file: `vi /etc/sysctl.d/k8s.conf`
 
-plus simple
+Add the following line to the file: net.ipv4.ip_forward=1
+
+Apply the changes: `sysctl -p`
+
+- Plus simple
 vi /etc/sysct.conf-> decommenter la ligne "net.ipv4.ip_forward=1"
 
 
