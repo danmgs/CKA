@@ -111,6 +111,10 @@ on peut voir qu'un déploiement est en pause avec la commande describe
 
 - k get pod kube-controller-manager-[xxx]
 
+- k api-resources | grep -i vpa |awk '{print $1}'
+
+- k api-resources | grep -i pod |awk '{print $1 "-" $2}'
+
 ### Custom columns
 
 ```
