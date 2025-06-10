@@ -114,7 +114,7 @@ on peut voir qu'un déploiement est en pause avec la commande describe
 ### Custom columns
 
 ```
-kubectl get pods -o custom-columns="NAME:.metadata.name,PRIORITY:.spec.priorityClassName"
+kubectl get pods -o custom-columns='NAME:.metadata.name,PRIORITY:.spec.priorityClassName'
 ```
 
 ### Explain
@@ -258,16 +258,18 @@ kubectl get events -o yaml -> explique pourquoi on peut utiliser "involvedObject
 kubectl get events -o yaml | grep -i involve -C2
 ```
 
-### Tri
+### Tri croissant et décroissant
 
 
 ```
-k get pod -n spectra-1267  -o custom-columns="POD_NAME:.metadata.name,IP_ADDR:.status.podIP" --sort-by=".status.podIP"  > /root/pod_ips_cka05_svcn
+k get pod -n spectra-1267  -o custom-columns='POD_NAME:.metadata.name,IP_ADDR:.status.podIP' --sort-by='.status.podIP'  > /root/pod_ips_cka05_svcn
 
-k get pod -n spectra-1267  -o custom-columns="POD_NAME:.metadata.name,IP_ADDR:.status.podIP" --no-headers | sort -k2  > /root/pod_ips_cka05_svcn
+k get pod -n spectra-1267  -o custom-columns='POD_NAME:.metadata.name,IP_ADDR:.status.podIP' --sort-by='.status.podIP'  --no-headers | tac
+
+k get pod -n kube-system -o custom-columns='NAME:.metadata.name,IP:.status.podIP' --sort-by='.status.podIP' --no-headers | tac
 ```
 
-"sort -k2 -r" => -r pour tri décroissant
+"tac" => pour tri décroissant
 
 ### Execution de pod container
 
