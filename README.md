@@ -559,7 +559,28 @@ spec:
 
 ### Helm
 
+
+```
 helm lint [path]
+```
+
+```
+helm search hub nginx --list-repo-url
+
+# cherche dans le hub et en listant tous les repos associés
+# (utile pour trouver le repo url et possibilité de faire un grep pour rechercher sur appversion par exemple)
+
+```
+
+```
+helm search repo <reponame>/<chartname> --versions  # liste toutes les versions
+
+helm search repo <reponame>/nginx --versions
+
+helm search repo <reponame>/nginx --version ^17.0 (version de chart commençant par 17)
+
+helm search repo nginx --version ^17 (recherche dans tous les repos registrés)
+```
 
 
 ### Voir le range IPS des pods et service d'un cluster
