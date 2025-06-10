@@ -232,6 +232,18 @@ spec:
             name: myconfigmap
 ```
 
+
+### kubectl patching
+
+There is one use of patch that is worth learning to get you out of an awkward spot in an exam, and that is if you muck up a PVC binding, you then delete and try to recreate the PVC but the new PVC won't bind.
+This is because the persistent volume can "remember" the previous binding. You clear it with the following patch command
+
+```
+kubectl patch pv your-persistent-volume -p '{"spec": { "claimRef": null }}'
+```
+
+Try it out in some of the PV/PVC mock questions.
+
 ### Events
 
 kubectl get events -> tous les events lié pod/service..etc dans le namespace actif
@@ -584,3 +596,9 @@ controlplane:~$ k get node -o yaml | grep -i podCIDR
     podCIDRs:
 
 ```
+
+### jsonpath
+
+JSONPath and custom columns definitely worth practicing.
+
+See also this https://github.com/kodekloudhub/community-faq/blob/main/docs/jsonpath.md
