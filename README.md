@@ -602,3 +602,46 @@ controlplane:~$ k get node -o yaml | grep -i podCIDR
 JSONPath and custom columns definitely worth practicing.
 
 See also this https://github.com/kodekloudhub/community-faq/blob/main/docs/jsonpath.md
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: alpine:latest
+          command: ['sh', '-c', 'while true; do echo "logging $(date)" >> /opt/logs.txt; sleep 1; done']
+          volumeMounts:
+            - name: data
+              mountPath: /opt
+        - name: busybox
+          image: busybox
+          command: ['sh', '-c', 'while true; do echo "logging"; sleep 2; done']
+      volumes:
+        - name: data
+          emptyDir: {}
+```
+```
+k get pod myapp-7848d697bb-jc2zj  -o jsonpath='{.spec.containers[*].name}'
+k get pod myapp-7848d697bb-jc2zj  -o json | jq -r '.spec.containers[].name'
+
+k get pod  -o jsonpath='{.items[*].spec.containers[*].name}'
+k get pod  -o json | jq -r '.items[].spec.containers[].name'
+
+k get pod myapp-599fc6958d-hfx85 -o jsonpath='{.spec.containers[?(@.name=="myapp")].image}'
+k get pod  -o jsonpath='{.items[*].spec.containers[?(@.name=="myapp")].image}'
+
+```
