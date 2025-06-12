@@ -115,6 +115,8 @@ on peut voir qu'un déploiement est en pause avec la commande describe
 
 - k api-resources | grep -i pod |awk '{print $1 "-" $2}'
 
+- k run -n cka-multi-containers cka-sidecar-pod --image=nginx:1.27 --dry-run=client -o yaml -- echo '$(date) Hi I am from Sidecar container > /log/app.log'
+
 ### Custom columns
 
 ```
@@ -322,10 +324,15 @@ Create a configuration file: `vi /etc/sysctl.d/k8s.conf`
 
 Add the following line to the file: net.ipv4.ip_forward=1
 
+Apply the changes: `sysctl --system`
+
+- Plus simple:
+
+vi /etc/sysct.conf-> decommenter la ligne "net.ipv4.ip_forward=1"
+
 Apply the changes: `sysctl -p`
 
-- Plus simple
-vi /etc/sysct.conf-> decommenter la ligne "net.ipv4.ip_forward=1"
+Contrairement à sysctl --system (qui applique tous les fichiers de configuration dans /etc/sysctl.d/, /run/sysctl.d/, etc.), sysctl -p ne lit qu’un seul fichier /etc/sysct.conf.
 
 
 ## Kubernetes Network Policies:
@@ -530,7 +537,7 @@ Pour récupérer l'api version d'un vpa, on peut s'aider des infos via `k explai
 
 En general pour `updatePolicy.updateMode` valant Auto |Initial | Off | Recreate
 
-un exemple de VPA
+Exemples de VPA
 
 ```
 apiVersion: autoscaling.k8s.io/v1
@@ -555,6 +562,33 @@ spec:
         cpu: "1"
         memory: "1Gi"
 ```
+
+```
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: api-vpa
+  namespace: services
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-deployment
+  updatePolicy:
+    updateMode: Auto
+  resourcePolicy:
+    containerPolicies:
+      - containerName: "api-container"
+        maxAllowed:
+          "cpu": "1"
+          "memory": "1Gi"
+        minAllowed:
+          "cpu": "600m"
+          "memory": "600Mi"
+```
+
+https://kodekloud.com/blog/vertical-pod-autoscaler/
+
 
 
 ### Helm
@@ -582,6 +616,12 @@ helm search repo <reponame>/nginx --version ^17.0 (version de chart commençant 
 helm search repo nginx --version ^17 (recherche dans tous les repos registrés)
 ```
 
+```
+helm show values lvm-crystal-apd/fluent-bit | grep -i replicas
+#recherche un argument "replicas" pour savoir comment setter une valeur replicas lors de l'installation
+
+helm install charts/mychart --set replicas="3"
+```
 
 ### Voir le range IPS des pods et service d'un cluster
 
