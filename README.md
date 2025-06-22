@@ -1,17 +1,27 @@
-# CKA
+fpatch# CKA
 
 
 ## Chemins pratiques
 
-| Topic             | Chemin |
-| ----------------- | --------------------------------------------------- |
-| apt k8s           | cat /etc/apt/sources.list.d/kubernetes.list
-| cni               | /etc/cni/net.d/<10-canal.conflist> 
-| config ipforward  | etc/sysctl.conf
-| static pods k8s   | /etc/kubernetes/manifests
-| Logs pods         | /var/log/pods/
-| Logs container    | /var/log/containers/
+| Topic                 | Chemin |
+| -----------------     | --------------------------------------------------- |
+| apt k8s               | cat /etc/apt/sources.list.d/kubernetes.list
+| cni                   | /etc/cni/net.d/<10-canal.conflist> 
+| cni binaires plugins  | /opt/cni/bin 
+| config ipforward      | etc/sysctl.conf
+| static pods k8s       | /etc/kubernetes/manifests
+| Logs pods             | /var/log/pods/
+| Logs container        | /var/log/containers/
 
+
+##image utiles
+
+
+
+| Images                | Permet de  |
+| -----------------     | --------------------------------------------------- |
+| curlimages/curl       | curl
+| busybox               | nslookup, ping, nc 
 
 
 <ins>kubelet<ins>:
@@ -55,7 +65,9 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 - crictl logs <containerid>
 
-- nc -zv <host> <port>
+- nc -zv -w 5 <host> <port>   (-w 5, timeout de 5 sec)
+
+- curl -m 5 <url> (curl avec timeout de 5s)
 
 - scp test_file.txt remote_server_username@remote_server_IP:/remote/directory
 
@@ -289,9 +301,9 @@ k exec -it webapp-pod -- env
 
 
 ```
-k run podtmp -it --image=busybox:1.28 --restart=Never --rm -- /bin/sh
+k run podtmp -i --image=busybox:1.28 --restart=Never --rm -- /bin/sh
 
-k run podtmp -it --image=busybox:1.28 --restart=Never --rm -- <cmdhere>
+k run podtmp -i --image=busybox:1.28 --restart=Never --rm -- <cmdhere>
 ```
 
 https://stackoverflow.com/questions/44712874/how-do-i-run-a-container-from-the-command-line-in-kubernetes-like-docker-run
@@ -508,11 +520,11 @@ Spec:
 <P-O-D-I-P.default.pod>
 
 > kubectl get pod nginx-resolver -o wide
-> kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup <P-O-D-I-P.default.pod> > /root/CKA/nginx.pod
+> kubectl run test-nslookup --image=busybox:1.28 --rm -i --restart=Never -- nslookup <P-O-D-I-P.default.pod> > /root/CKA/nginx.pod
 
 Get the IP of the nginx-resolver pod and replace the dots(.) with hyphon(-) which will be used below.
 
-> kubectl run test-nslookup --image=busybox:1.28 --rm -it --restart=Never -- nslookup 172-17-1-11.default.pod
+> kubectl run test-nslookup --image=busybox:1.28 --rm -i --restart=Never -- nslookup 172-17-1-11.default.pod
 If you don't see a command prompt, try pressing enter.
 Address 1: 172.20.0.10 kube-dns.kube-system.svc.cluster.local
 
