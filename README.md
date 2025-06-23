@@ -724,3 +724,44 @@ k get pod myapp-599fc6958d-hfx85 -o jsonpath='{.spec.containers[?(@.name=="myapp
 k get pod  -o jsonpath='{.items[*].spec.containers[?(@.name=="myapp")].image}'
 
 ```
+
+### Flannel
+
+To install a network plugin, we will go with Flannel as the default choice. For inter-host communication, we will utilize the eth0 interface and update the Network field accordingly.
+
+https://github.com/flannel-io/flannel?tab=readme-ov-file#deploying-flannel-manually
+
+
+```
+curl -LO https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+```
+
+Edit network pod cidr:
+
+```
+
+  net-conf.json: |
+    {
+      "Network": "172.17.0.0/16",
+      "EnableNFTables": false,
+      "Backend": {
+        "Type": "vxlan"
+      }
+    }
+```  
+
+Edit the file, adding the **iface** args - [See flannel config](https://github.com/flannel-io/flannel/blob/master/Documentation/configuration.md)
+
+In flannel DaemonSet:
+
+``` 
+      containers:
+      - args:
+        - --ip-masq
+        - --kube-subnet-mgr
+        - --iface=eth0
+```         
+
+```
+kubectl -f apply kube-flannel.yml
+```
