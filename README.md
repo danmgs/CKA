@@ -73,6 +73,8 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 - grep -i ^ERROR    (recherche les éléments commençant par ERROR)
 
+- iptables-save |grep -i nginx-svc
+
 ## Commandes kubectl utiles
 
 
@@ -765,3 +767,18 @@ In flannel DaemonSet:
 ```
 kubectl -f apply kube-flannel.yml
 ```
+
+
+###Kustomize
+
+https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
+
+```
+ kubectl apply -k .
+```
+
+or 
+```
+ kustomize build k8s/ | kubectl apply -f -
+```
+
