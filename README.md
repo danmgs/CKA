@@ -3,15 +3,17 @@ fpatch# CKA
 
 ## Chemins pratiques
 
-| Topic                 | Chemin |
-| -----------------     | --------------------------------------------------- |
-| apt k8s               | cat /etc/apt/sources.list.d/kubernetes.list
-| cni                   | /etc/cni/net.d/<10-canal.conflist> 
-| cni binaires plugins  | /opt/cni/bin 
-| config ipforward      | etc/sysctl.conf
-| static pods k8s       | /etc/kubernetes/manifests
-| Logs pods             | /var/log/pods/
-| Logs container        | /var/log/containers/
+| Topic                  | Chemin |
+| -----------------       | --------------------------------------------------- |
+| apt k8s                 | cat /etc/apt/sources.list.d/kubernetes.list
+| cni                     | /etc/cni/net.d/<10-canal.conflist> 
+| cni binaires plugins    | /opt/cni/bin 
+| config ipforward        | etc/sysctl.conf
+| static pods k8s         | /etc/kubernetes/manifests
+| Logs pods               | /var/log/pods/
+| Logs container          | /var/log/containers/
+| Certs Compo Cluster     | /etc/kubernetes/pki
+| Certs Compo etcd        | /etc/kubernetes/pki/etcd
 
 
 ##image utiles
@@ -47,7 +49,11 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 ## Commandes système utiles
 
+- find /etc/kubernetes/pki |grep -i apiserver
+
 - sudo netstat -natulp | grep postgres | grep LISTEN
+
+- netstat -anp 
 
 - systemctl list-units --type=service --all
 
@@ -59,15 +65,25 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 - ps -ef | grep --color=auto etcd
 
+- ps aux
+
+- ps -p <PID>
+
 - crictl ps -a
 
 - crictl ps -a | grep -i exited
 
 - crictl logs <containerid>
 
+- crictl inspect <containerid> |grep -i runtime
+
+- crictl logs <containerid> &> outputavecerreur.log  , s'il y a des erreurs, alors &> permet de bien rediriger les ereurs vers le fichier !
+
 - nc -zv -w 5 <host> <port>   (-w 5, timeout de 5 sec)
 
-- curl -m 5 <url> (curl avec timeout de 5s)
+- curl -m 5 <url> (curl avec timeout de 5s)  
+
+- curl -s <url>:<port>  (-s : silent mode, moins bavard + port facultatif)
 
 - scp test_file.txt remote_server_username@remote_server_IP:/remote/directory
 
@@ -76,7 +92,6 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 - iptables-save |grep -i nginx-svc
 
 ## Commandes kubectl utiles
-
 
 ### Divers
 
@@ -682,7 +697,9 @@ controlplane:~$ k get node -o yaml | grep -i podCIDR
 
 JSONPath and custom columns definitely worth practicing.
 
-See also this https://github.com/kodekloudhub/community-faq/blob/main/docs/jsonpath.md
+See also this:
+- https://github.com/kodekloudhub/community-faq/blob/main/docs/jsonpath.md
+- https://kubernetes.io/docs/reference/kubectl/jsonpath/
 
 ```
 apiVersion: apps/v1
@@ -724,6 +741,8 @@ k get pod  -o json | jq -r '.items[].spec.containers[].name'
 
 k get pod myapp-599fc6958d-hfx85 -o jsonpath='{.spec.containers[?(@.name=="myapp")].image}'
 k get pod  -o jsonpath='{.items[*].spec.containers[?(@.name=="myapp")].image}'
+
+k get pod -o jsonpath='{range .items[*]}[{.metadata.name}, {.metadata.qosClass}] {end}' | grep -i BestEffort | awk '{print $1}'
 
 ```
 
@@ -782,3 +801,40 @@ or
  kustomize build k8s/ | kubectl apply -f -
 ```
 
+### Kubeadm
+
+```
+kubeadm upgrade plan 
+kubeadm upgrade plan <version_kubeadm>
+kubeadm upgrade apply <version_kubeadm>
+
+kubeadm upgrade node
+``` 
+
+```
+kubeadm init 
+``` 
+
+--apiserver-advertise-address \
+--apiserver-cert-extra-sans \
+--pod-network-cidr \
+--service-cidr
+
+- pour "apiserver-advertise-address" -> récupérer l'ip du controlplane  avec `ip a show eth0`
+- "apiserver-cert-extra-sans" -> alternative name, exemple "controlplane"
+
+```
+kubeadm token list
+
+kubeadm token create --print-join-command   
+#a lancer sur le control plane
+# on obtiendra le "kubeadm join xxx" à lancer sur le worker node
+```
+
+```
+kubeadm certs check-expiration
+kubeadm certs check-expiration | grep -i apiserver
+kubeadm certs renew <cert_composant_a_renouveller>
+
+openssl x509 -in <path_cert.crt> -text -noout | grep -i validity -A5
+```
