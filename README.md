@@ -637,6 +637,8 @@ helm search hub nginx --list-repo-url
 
 ```
 helm search repo <reponame>/<chartname> --versions  # liste toutes les versions
+helm search repo bitnami/nginx -l # liste toutes les versions   (arg "--versions" équivaut à "-l")
+helm search repo bitnami/nginx -l | head -n30 liste les 30 premières version
 
 helm search repo <reponame>/nginx --versions
 
@@ -646,7 +648,7 @@ helm search repo nginx --version ^17 (recherche dans tous les repos registrés)
 ```
 
 ```
-helm show values lvm-crystal-apd/fluent-bit | grep -i replicas
+helm show values lvm-crystal-apd/fluent-bit | grep -i replicas -A2
 #recherche un argument "replicas" pour savoir comment setter une valeur replicas lors de l'installation
 
 helm install charts/mychart --set replicas="3"
