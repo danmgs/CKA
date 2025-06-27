@@ -93,6 +93,16 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 ## Commandes kubectl utiles
 
+### Pour cluster composants 
+
+k exec -n kube-system kube-apiserver-<controlplane> -- kube-apiserver -h
+
+k exec -n kube-system kube-apiserver-<controlplane> -- kube-apiserver -h |grep -i admission
+
+k exec -n kube-system kube-apiserver-<controlplane> -- kube-apiserver --version
+
+k exec -n kube-system etcd-<controlplane> -- etcd --version
+
 ### Divers
 
 - kubectl run httpd --image=httpd:alpine --port=80 --expose
@@ -521,12 +531,17 @@ Spec:
 
 ## DNS
 
+https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
 
 ### Adresse d'un service
 
 ```
 <service>.namespace.svc.local
 ```
+
+
+Note: \
+Headless Services (without a cluster IP) are also assigned DNS A and/or AAAA records, with a name of the form my-svc.my-namespace.svc.cluster-domain.example. Unlike normal Services, this resolves to the set of IPs of all of the Pods selected by the Service. 
 
 ### Adresse d'un pod est : 
 
@@ -535,6 +550,12 @@ Spec:
 ```
 
 <P-O-D-I-P.default.pod>
+
+Some cluster DNS mechanisms, like CoreDNS, also provide A records for:
+
+```
+<pod-ipv4-address>.<service-name>.<my-namespace>.svc.<cluster-domain.example>
+```
 
 > kubectl get pod nginx-resolver -o wide
 > kubectl run test-nslookup --image=busybox:1.28 --rm -i --restart=Never -- nslookup <P-O-D-I-P.default.pod> > /root/CKA/nginx.pod
