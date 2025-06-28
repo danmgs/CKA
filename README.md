@@ -1,19 +1,32 @@
-fpatch# CKA
+# CKA
+
+##Liens utiles
+
+| Label                    | Url |
+| ------------------------ | --------------------------------------------------- |
+| cheat sheet              | https://kubernetes.io/docs/reference/kubectl/quick-reference/
+
+Note: le "label" est le mot clé à chercher dans la docs k8s
 
 
 ## Chemins pratiques
 
-| Topic                  | Chemin |
-| -----------------       | --------------------------------------------------- |
-| apt k8s                 | cat /etc/apt/sources.list.d/kubernetes.list
-| cni                     | /etc/cni/net.d/<10-canal.conflist> 
-| cni binaires plugins    | /opt/cni/bin 
-| config ipforward        | etc/sysctl.conf
-| static pods k8s         | /etc/kubernetes/manifests
-| Logs pods               | /var/log/pods/
-| Logs container          | /var/log/containers/
-| Certs Compo Cluster     | /etc/kubernetes/pki
-| Certs Compo etcd        | /etc/kubernetes/pki/etcd
+| Topic                             | Chemin |
+| --------------------------------- | --------------------------------------------------- |
+| apt k8s                           | cat /etc/apt/sources.list.d/kubernetes.list
+| cni                               | /etc/cni/net.d/<10-canal.conflist> 
+| cni binaires plugins              | /opt/cni/bin 
+| config ipforward                  | etc/sysctl.conf
+| static pods k8s                   | /etc/kubernetes/manifests
+| Logs pods                         | /var/log/pods/
+| Logs container                    | /var/log/containers/
+| Logs des services                 | /var/log/syslog
+| Les services (ex: kubelet)        | /usr/lib/systemd
+| Certs Compo Cluster               | /etc/kubernetes/pki
+| Certs Compo etcd                  | /etc/kubernetes/pki/etcd
+| Certs Kubelet client + server     | /var/lib/kubelet/pki/
+
+
 
 
 ##image utiles
