@@ -62,7 +62,11 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 ## Commandes système utiles
 
-- find /etc/kubernetes/pki |grep -i apiserver
+- find /etc/kubernetes/pki | grep -i apiserver
+
+- find /etc/kubernetes/pki | grep crt
+
+- find /opt/course/kustomize/dummy | grep yaml
 
 - sudo netstat -natulp | grep postgres | grep LISTEN
 
@@ -559,7 +563,7 @@ Headless Services (without a cluster IP) are also assigned DNS A and/or AAAA rec
 ### Adresse d'un pod est : 
 
 ```
-<podip_avec_des_tirets>.namespace.pod.local
+<podip_avec_des_tirets>.namespace.pod.cluster.local
 ```
 
 <P-O-D-I-P.default.pod>
