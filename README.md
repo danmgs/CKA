@@ -763,6 +763,26 @@ helm show values lvm-crystal-apd/fluent-bit | grep -i replicas -A2
 helm install charts/mychart --set replicas="3"
 ```
 
+"Helm Template" - https://helm.sh/docs/helm/helm_template/ 
+
+```
+helm search hub argocd --list-repo-url |grep -i argoproj
+helm repo add argo https://argoproj.github.io/argo-helm   
+helm repo list
+helm repo update
+helm search repo 
+helm show values argo/argo-cd
+helm show values argo/argo-cd |grep -i crds -A30   # permet de voir cqu'on peut setter crds.install à true ou false  (true par default)
+
+helm template my-release argo/argo-cd --set crds.install=true > setup.yaml    #génère les objets yaml qui vont être crée et on les output vers un yaml
+cat setup.yaml |grep -i customres # on trouvera des kind: CustomResourceDefinition
+
+helm template my-release argo/argo-cd --set crds.install=false > setup.yaml
+cat setup.yaml |grep -i customres # on NE trouvera plus les kind: CustomResourceDefinition
+
+k apply -f setup.yaml
+```
+
 ### Voir le range IPS des pods et service d'un cluster
 
 Range IPs des pods sur l'ensemble du cluster
