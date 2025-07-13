@@ -108,6 +108,8 @@ cat /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 - iptables-save |grep -i nginx-svc
 
+- sed -i 's/bonjour/hello/g' fichiercontenantbonjour.txt   (remplace bonjour par hello dans tout le fichier "g" pour global)
+
 ## Commandes kubectl utiles
 
 ### Pour cluster composants 
@@ -436,7 +438,7 @@ spec:
   - Egress
 ```
 
-Autres Notes:
+### AND versus OR
 
 - Quand le pod accepte un ingress sur le port 80, alors cela signifie implicitement aussi que la communication est également sortante par 80
 
@@ -545,6 +547,75 @@ Spec:
   Policy Types: Ingress, Egress
 
 ```
+
+### Rajouter  Egress, les pods backend (labels: backend et ckad-exam) ne parviennent pas à communiquer avec les pods frontends (labels: frontend et ckad-exam)
+
+```
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-egress-restricted
+spec:
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: frontend
+          tier: ckad-exam   
+  podSelector:
+    matchLabels:
+      app: backend
+      tier: ckad-exam
+  policyTypes:
+  - Egress
+```  
+
+```
+root@student-node ~ ➜  k exec -n ns-new-ckad -it backend-pods -- sh
+# curl -m 2 frontend-ckad-svcn.ns-new-ckad.svc.cluster.local
+curl: (28) Resolving timed out after 2000 milliseconds
+```
+
+
+Il suffira de rajouter les ports 53 pour permettre d'atteindre le service DNS et permettre la communication entre les pods backend vers frontend
+ 
+``` 
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-egress-restricted
+spec:
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: frontend
+          tier: ckad-exam
+  - ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53        
+  podSelector:
+    matchLabels:
+      app: backend
+      tier: ckad-exam
+  policyTypes:
+  - Egress
+``` 
+
+```
+# curl -m 2 frontend-ckad-svcn.ns-new-ckad.svc.cluster.local
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;  
+```
+
+
 
 ## DNS
 
