@@ -173,6 +173,10 @@ on peut voir qu'un déploiement est en pause avec la commande describe
 
 - k api-resources | grep -i pod |awk '{print $1 "-" $2}'
 
+- kubectl api-resources --api-group=authorization.k8s.io # Identify the kube api-resources that use api_version=authorization.k8s.io/v1
+- kubectl api-resources --api-group=""
+- kubectl api-resources --api-group="apps"
+
 - k run -n cka-multi-containers cka-sidecar-pod --image=nginx:1.27 --dry-run=client -o yaml -- echo '$(date) Hi I am from Sidecar container > /log/app.log'
 
 ### Custom columns
